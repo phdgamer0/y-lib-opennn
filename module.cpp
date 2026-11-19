@@ -1,5 +1,13 @@
+#include <opennn/opennn.h>
 #include "ylang/vm.hpp"
 #include <iostream>
+
+// exposes the protected epoch limit
+struct OptimizerHack : public opennn::Optimizer {
+	static void set_epochs(opennn::Optimizer *opt, long epochs) {
+		static_cast<OptimizerHack *>(opt)->maximum_epochs = (Index)epochs;
+	}
+};
 
 extern "C" void YlangLoadModule(std::shared_ptr<Env> env, const std::vector<std::string> &symbols) {
     auto moduleNamespace = std::make_shared<ClassObject>("OpenNN");
@@ -286,10 +294,3 @@ extern "C" void YlangLoadModule(std::shared_ptr<Env> env, const std::vector<std:
 		defineClass(dataClass);
 		defineClass(optClass);
 	}
-}
-
-struct OptimizerHack : public opennn::Optimizer {
-	static void set_epochs(opennn::Optimizer *opt, long epochs) {
-		static_cast<OptimizerHack *>(opt)->maximum_epochs = (Index)epochs;
-	}
-};
